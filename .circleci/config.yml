@@ -52,9 +52,6 @@ jobs:
           name: Install Bash
           command: apk update && apk add bash
       - run:
-          name: Change to directory
-          command:
-      - run:
           name: Push Docker Image to Docker Hub Registry
           command: |
             cd 7.4
