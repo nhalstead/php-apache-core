@@ -5,7 +5,7 @@ set -eo pipefail
 if [ "" == "$IMAGE_PATH" ] ; then exit 0; fi
 
 # Build Image
-docker build -t $IMAGE_PATH:$TAG_PREFIX$CIRCLE_BUILD_NUM .
+docker build --pull -t $IMAGE_PATH:$TAG_PREFIX$CIRCLE_BUILD_NUM .
 
 docker login -u $DOCKER_USER -p $DOCKER_PASS
 
