@@ -32,11 +32,10 @@ jobs:
           name: Install Bash
           command: apk update && apk add bash
       - run:
-          name: Change to directory
-          command: cd 8.0
-      - run:
           name: Push Docker Image to Docker Hub Registry
-          command: 'bash ~/project/.circleci/registry_push.sh'
+          command: |
+            cd 8.0
+            bash ~/project/.circleci/registry_push.sh
   build74:
     resource_class: small
     docker:
@@ -54,7 +53,9 @@ jobs:
           command: apk update && apk add bash
       - run:
           name: Change to directory
-          command: cd 7.4
+          command:
       - run:
           name: Push Docker Image to Docker Hub Registry
-          command: 'bash ~/project/.circleci/registry_push.sh'
+          command: |
+            cd 7.4
+            bash ~/project/.circleci/registry_push.sh
