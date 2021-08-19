@@ -4,9 +4,15 @@ workflows:
   build-deploy:
     jobs:
       # Tag this build process in Docker Hub, Only apply to development, master, production branches
-      - build:
-          requires:
-            - test
+      - build80:
+          filters:
+            branches:
+              only:
+                - master
+                - development
+                - production
+      # Tag this build process in Docker Hub, Only apply to development, master, production branches
+      - build74:
           filters:
             branches:
               only:
