@@ -1,0 +1,58 @@
+version: 2.1
+workflows:
+  version: 2
+  build-deploy:
+    jobs:
+      # Tag this build process in Docker Hub, Only apply to development, master, production branches
+      - build:
+          requires:
+            - test
+          filters:
+            branches:
+              only:
+                - master
+                - development
+                - production
+jobs:
+  build80:
+    resource_class: small
+    docker:
+      - image: docker:20-git
+    environment:
+      # Define the Docker Hub Path to Push the Image
+      IMAGE_PATH: "nhalstead00/php-apache-core"
+      TAG_PREFIX: "8.0-"
+    steps:
+      - checkout
+      - setup_remote_docker:
+          docker_layer_caching: false
+      - run:
+          name: Install Bash
+          command: apk update && apk add bash
+      - run:
+          name: Change to directory
+          command: cd 8.0
+      - run:
+          name: Push Docker Image to Docker Hub Registry
+          command: 'bash ~/project/.circleci/registry_push.sh'
+  build74:
+    resource_class: small
+    docker:
+      - image: docker:20-git
+    environment:
+      # Define the Docker Hub Path to Push the Image
+      IMAGE_PATH: "nhalstead00/php-apache-core"
+      TAG_PREFIX: "7.4-"
+    steps:
+      - checkout
+      - setup_remote_docker:
+          docker_layer_caching: false
+      - run:
+          name: Install Bash
+          command: apk update && apk add bash
+      - run:
+          name: Change to directory
+          command: cd 7.4
+      - run:
+          name: Push Docker Image to Docker Hub Registry
+          command: 'bash ~/project/.circleci/registry_push.sh'
