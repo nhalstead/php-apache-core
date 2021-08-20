@@ -32,6 +32,9 @@ jobs:
           name: Docker Version
           command: docker -v
       - run:
+          name: RUNC Version
+          command: runc -v
+      - run:
           name: Install Bash
           command: apk update && apk add bash
       - run:
@@ -54,6 +57,9 @@ jobs:
       - run:
           name: Docker Version
           command: docker -v
+      - run:
+          name: RUNC Version
+          command: runc -v
       - run:
           name: Install Bash
           command: apk update && apk add bash
