@@ -29,6 +29,9 @@ jobs:
       - setup_remote_docker:
           docker_layer_caching: false
       - run:
+          name: Docker Version
+          command: docker -v
+      - run:
           name: Install Bash
           command: apk update && apk add bash
       - run:
@@ -48,6 +51,9 @@ jobs:
       - checkout
       - setup_remote_docker:
           docker_layer_caching: false
+      - run:
+          name: Docker Version
+          command: docker -v
       - run:
           name: Install Bash
           command: apk update && apk add bash
