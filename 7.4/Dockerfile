@@ -1,5 +1,5 @@
 # Normal Operations for setup of Apache and ENV Vars
-FROM php:7.4-apache
+FROM php:7.4-apache-buster
 
 # Configure OPCache
 ENV PHP_OPCACHE_VALIDATE_TIMESTAMPS 0
