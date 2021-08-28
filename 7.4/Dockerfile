@@ -25,7 +25,8 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 RUN a2enmod rewrite
 RUN a2enmod remoteip
 RUN touch /etc/apache2/conf-available/remoteip.conf
-RUN a2econf remoteip
+#RUN a2econf remoteip
+RUN ln -s /etc/apache2/conf-available/remoteip.conf /etc/apache2/conf-enabled/remoteip.conf
 
 RUN sed -ri -e 's!AllowOverride None!AllowOverride All!g' /etc/apache2/apache2.conf
 RUN sed -ri -e 's!Listen 80!Listen 8181!g' /etc/apache2/ports.conf
