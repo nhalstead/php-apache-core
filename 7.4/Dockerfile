@@ -23,6 +23,9 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 #  - Load Module RemoteIP
 #  - Reconfigure Logging to include X-Forward-For Header
 RUN a2enmod rewrite
+RUN a2enmod remoteip
+RUN touch /etc/apache2/conf-available/remoteip.conf
+RUN a2econf remoteip
 
 RUN sed -ri -e 's!AllowOverride None!AllowOverride All!g' /etc/apache2/apache2.conf
 RUN sed -ri -e 's!Listen 80!Listen 8181!g' /etc/apache2/ports.conf
@@ -32,7 +35,3 @@ RUN echo "ServerTokens Prod" >> /etc/apache2/apache2.conf
 
 RUN sed -ri -e 's!#LoadModule remoteip_module!LoadModule remoteip_module!g' /etc/apache2/apache2.conf
 RUN sed -ri -e 's/LogFormat .* combined/LogFormat \"%h %a %l %u %t \\\"%r\\\" %>s %b \\\"%{Referer}i\\\" \\\"%{User-Agent}i\\\" %I %O\" combined/g'  /etc/apache2/apache2.conf
-
-RUN a2enmod remoteip
-RUN touch /etc/apache2/conf-available/remoteip.conf
-RUN a2econf remoteip
