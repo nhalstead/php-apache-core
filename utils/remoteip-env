@@ -11,6 +11,5 @@ if [ -d "/etc/apache2/conf-available" ]; then
   # Configure Apache's RemoteIP Module
   echo "RemoteIPHeader X-Forwarded-For" > /etc/apache2/conf-available/remoteip.conf
   echo "RemoteIPTrustedProxy ${APACHE_TRUSTED_PROXIES//[;,]/ }" >> /etc/apache2/conf-available/remoteip.conf
-  echo "RemoteIPInternalProxy ${APACHE_TRUSTED_PROXIES//[;,]/ }" >> /etc/apache2/conf-available/remoteip.conf
 
 fi
