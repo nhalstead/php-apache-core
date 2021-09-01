@@ -1,0 +1,10 @@
+#!/bin/bash
+
+# Configure the Remote IP from the ENV config.
+remoteip-env
+
+# Start Apache
+apache2-foreground
+
+# Start a terminal
+/bin/bash
