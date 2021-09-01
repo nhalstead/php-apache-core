@@ -36,3 +36,5 @@ RUN echo "ServerTokens Prod" >> /etc/apache2/apache2.conf
 
 RUN sed -ri -e 's!#LoadModule remoteip_module!LoadModule remoteip_module!g' /etc/apache2/apache2.conf
 RUN sed -ri -e 's/LogFormat .* combined/LogFormat \"%h %a %l %u %t \\\"%r\\\" %>s %b \\\"%{Referer}i\\\" \\\"%{User-Agent}i\\\" %I %O\" combined/g'  /etc/apache2/apache2.conf
+
+EXPOSE 8181
