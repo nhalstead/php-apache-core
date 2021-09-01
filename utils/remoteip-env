@@ -1,0 +1,15 @@
+#!/bin/bash
+
+# This script will attempt to read in the Remote IP config from the
+#  ENV var and apply the settings in the matching remoteip.conf file.
+#
+# APACHE_TRUSTED_PROXIES="10.0.0.0/23,172.16.10.0/24"
+#
+
+if [ -d "/etc/apache2/conf-available" ]; then
+
+  # Configure Apache's RemoteIP Module
+  echo "RemoteIPHeader X-Forwarded-For" > /etc/apache2/conf-available/remoteip.conf
+  echo "RemoteIPTrustedProxy \"${APACHE_TRUSTED_PROXIES//[;,]/ }\"" >> /etc/apache2/conf-available/remoteip.conf
+
+fi
