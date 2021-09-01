@@ -7,7 +7,7 @@ if [ "" == "$IMAGE_PATH" ] ; then exit 0; fi
 DOCKERFILE="."
 
 if [ "$#" -eq 1 ]; then
-  DOCKERFILE="-f \"$1\" ."
+  DOCKERFILE="-f $1 ."
 fi
 
 pwd
