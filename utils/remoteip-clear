@@ -1,0 +1,9 @@
+#!/bin/bash
+
+# Clears the remoteip.conf file
+
+if [ -d "/etc/apache2/conf-available" ]; then
+
+  echo "" > /etc/apache2/conf-available/remoteip.conf
+
+fi
