@@ -41,8 +41,7 @@ jobs:
       - run:
           name: Push Docker Image to Docker Hub Registry
           command: |
-            cd 8.0
-            bash ~/project/.circleci/registry_push.sh
+            bash ~/project/.circleci/registry_push.sh 8.0/Dockerfile
   build74:
     resource_class: small
     docker:
@@ -68,5 +67,4 @@ jobs:
       - run:
           name: Push Docker Image to Docker Hub Registry
           command: |
-            cd 7.4
-            bash ~/project/.circleci/registry_push.sh
+            bash ~/project/.circleci/registry_push.sh 7.4/Dockerfile

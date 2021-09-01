@@ -4,10 +4,16 @@ set -eo pipefail
 # Allow early Exit if IMAGE_PATH does note exist.
 if [ "" == "$IMAGE_PATH" ] ; then exit 0; fi
 
+DOCKERFILE="."
+
+if [ "$#" -eq 1 ]; then
+  DOCKERFILE="-f \"$1\" ."
+fi
+
 pwd
 
 # Build Image
-docker build --pull --no-cache -t $IMAGE_PATH:$TAG_PREFIX$CIRCLE_BUILD_NUM .
+docker build --pull --no-cache -t $IMAGE_PATH:$TAG_PREFIX$CIRCLE_BUILD_NUM $DOCKERFILE
 
 docker login -u $DOCKER_USER -p $DOCKER_PASS
 
