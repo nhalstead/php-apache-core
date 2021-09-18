@@ -31,7 +31,8 @@ RUN a2enmod remoteip
 RUN touch /etc/apache2/conf-available/remoteip.conf
 RUN ln -s /etc/apache2/conf-available/remoteip.conf /etc/apache2/conf-enabled/remoteip.conf
 
-COPY common/remoteip-* /usr/sbin
+COPY common/remoteip-env /usr/sbin
+COPY common/remoteip-clear /usr/sbin
 RUN chmod +x /usr/sbin/remoteip-*
 
 RUN sed -ri -e 's!AllowOverride None!AllowOverride All!g' /etc/apache2/apache2.conf
