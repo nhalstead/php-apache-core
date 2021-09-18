@@ -7,12 +7,14 @@ ENV PHP_OPCACHE_MAX_ACCELERATED_FILES 10000
 ENV PHP_OPCACHE_MEMORY_CONSUMPTION 192
 ENV PHP_OPCACHE_MAX_WASTED_PERCENTAGE 10
 
-RUN apt-get update -y
-RUN apt-get install -y openssl zip unzip git iputils-ping libpng-dev libzip-dev
-RUN docker-php-ext-install gd zip pdo mysqli pdo_mysql opcache
-RUN pecl install redis
-RUN docker-php-ext-enable redis
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+RUN apt-get update -y; \
+	apt-get install -y openssl zip unzip git iputils-ping libpng-dev libzip-dev; \
+	docker-php-ext-install gd zip pdo mysqli pdo_mysql opcache; \
+	pecl install redis; \
+	docker-php-ext-enable redis; \
+	apt autoremove; \
+	curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer; \
+	rm -rf /var/lib/apt/lists/*;
 
 # Configure Apache
 #  - Enables Modrerite
@@ -38,6 +40,6 @@ RUN echo "ServerSignature off" >> /etc/apache2/apache2.conf
 RUN echo "ServerTokens Prod" >> /etc/apache2/apache2.conf
 
 RUN sed -ri -e 's!#LoadModule remoteip_module!LoadModule remoteip_module!g' /etc/apache2/apache2.conf
-RUN sed -ri -e 's/LogFormat .* combined/LogFormat \"%h %a %l %u %t \\\"%r\\\" %>s %b \\\"%{Referer}i\\\" \\\"%{User-Agent}i\\\" %I %O\" combined/g'  /etc/apache2/apache2.conf
+RUN sed -ri -e 's/LogFormat .* combined/LogFormat \"%a %{c}a %l %u %t \\\"%r\\\" %>s %b \\\"%{Referer}i\\\" \\\"%{User-Agent}i\\\" %I %O\" combined/g'  /etc/apache2/apache2.conf
 
 EXPOSE 8181
