@@ -29,11 +29,10 @@ RUN apt-get update -y; \
 RUN a2enmod rewrite
 RUN a2enmod remoteip
 RUN touch /etc/apache2/conf-available/remoteip.conf
-#RUN a2econf remoteip
 RUN ln -s /etc/apache2/conf-available/remoteip.conf /etc/apache2/conf-enabled/remoteip.conf
 
-COPY utils/remoteip-env /usr/sbin/remoteip-env
-RUN chmod +x /usr/sbin/remoteip-env
+COPY common/remoteip-* /usr/sbin
+RUN chmod +x /usr/sbin/remoteip-*
 
 RUN sed -ri -e 's!AllowOverride None!AllowOverride All!g' /etc/apache2/apache2.conf
 RUN sed -ri -e 's!Listen 80!Listen 8181!g' /etc/apache2/ports.conf
