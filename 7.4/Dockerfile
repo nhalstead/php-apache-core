@@ -7,6 +7,8 @@ ENV PHP_OPCACHE_MAX_ACCELERATED_FILES 10000
 ENV PHP_OPCACHE_MEMORY_CONSUMPTION 192
 ENV PHP_OPCACHE_MAX_WASTED_PERCENTAGE 10
 
+COPY common/opcache/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
+
 RUN apt-get update -y; \
 	apt-get install -y openssl zip unzip git iputils-ping libpng-dev libzip-dev; \
 	docker-php-ext-install gd zip pdo mysqli pdo_mysql opcache; \
