@@ -10,11 +10,13 @@ ENV PHP_OPCACHE_MAX_WASTED_PERCENTAGE 10
 COPY common/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
 
 RUN apt-get update -y; \
-	apt-get install -y openssl zip unzip git iputils-ping libpng-dev libzip-dev; \
+	apt-get install -y openssl zip unzip git iputils-ping libpng-dev libzip-dev libmagickwand-dev --no-install-recommends; \
 	docker-php-ext-install gd zip pdo mysqli pdo_mysql opcache; \
 	pecl install redis; \
+	pecl install imagick; \
 	docker-php-ext-enable redis; \
-	apt autoremove; \
+	docker-php-ext-enable imagick; \
+	apt autoremove -y; \
 	curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer; \
 	rm -rf /var/lib/apt/lists/*;
 
