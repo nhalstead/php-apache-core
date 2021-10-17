@@ -1,0 +1,2 @@
+RewriteEngine On
+RewriteRule ^index\.(txt|json|html|pdf)$ /index.php?format=$1 [L]
