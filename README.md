@@ -8,12 +8,12 @@ This image is the PHP 7.4 (and 8.0) packaged with the following changes:
 - ZIP (with libzip-dev and php extension)
 - git
 - iputils
-- Redis
-- GD
+- Redis Extension
+- GD and imagick Extensions
 - PDO
-- MYSQL / PDO MYSQLI
-- Apache Mod Rewrite
-- Apache Mod Remote IP
+- MYSQL / PDO MYSQLI Extensions
+- Apache Mod Rewrite Module
+- Apache Mod Remote IP Module
 - Apache Signatures Off
 - Apache Allow htaccess overrides
 - Apache Logs Updated to include the remote ips
