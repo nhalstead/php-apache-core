@@ -10,6 +10,12 @@ workflows:
               only:
                 - main
       # Tag this build process in Docker Hub, Only apply to development, master, production branches
+      - build80headless:
+          filters:
+            branches:
+              only:
+                - main
+      # Tag this build process in Docker Hub, Only apply to development, master, production branches
       - build74:
           filters:
             branches:
@@ -42,6 +48,32 @@ jobs:
           name: Push Docker Image to Docker Hub Registry
           command: |
             bash ~/project/.circleci/registry_push.sh 8.0/Dockerfile
+  build80headless:
+    resource_class: small
+    docker:
+      - image: docker:20-git
+    environment:
+      # Define the Docker Hub Path to Push the Image
+      IMAGE_PATH: "nhalstead00/php-apache-core"
+      TAG_PREFIX: "8.0-headless-"
+    steps:
+      - checkout
+      - setup_remote_docker:
+          docker_layer_caching: false
+          version: 20.10.6
+      - run:
+          name: Docker Version
+          command: docker -v
+      - run:
+          name: RUNC Version
+          command: runc -v
+      - run:
+          name: Install Bash
+          command: apk update && apk add bash
+      - run:
+          name: Push Docker Image to Docker Hub Registry
+          command: |
+            bash ~/project/.circleci/registry_push.sh 8.0/Dockerfile-headless
   build74:
     resource_class: small
     docker:
