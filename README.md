@@ -23,4 +23,5 @@ This image is the PHP 7.4 (and 8.0) packaged with the following changes:
 # [Images](https://hub.docker.com/repository/docker/nhalstead00/php-apache-core/tags?page=1&ordering=last_updated)
 
 - nhalstead00/php-apache-core:8.0-latest
+- nhalstead00/php-apache-core:8.0-headless-latest
 - nhalstead00/php-apache-core:7.4-latest
