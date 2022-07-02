@@ -8,7 +8,7 @@ After using this docker image in other pipelines I was able to cut build times d
 
 ## Changes
 
-This image is the PHP 7.4 (and 8.0) packaged with the following changes:
+This image is the PHP 7.4 (and 8.0, 8.1) packaged with the following changes:
 - PHP (version 7.4 or 8.0)
 - Apache
 - OPCache (and configured)
@@ -30,6 +30,10 @@ This image is the PHP 7.4 (and 8.0) packaged with the following changes:
 
 # [Images](https://hub.docker.com/r/nhalstead00/php-apache-core)
 
+- nhalstead00/php-apache-core:8.1-latest
+- nhalstead00/php-apache-core:8.1-headless-latest
+  - Extra resources for headless browsers
+  - Use this image if using chromium.
 - nhalstead00/php-apache-core:8.0-latest
 - nhalstead00/php-apache-core:8.0-headless-latest
   - Extra resources for headless browsers

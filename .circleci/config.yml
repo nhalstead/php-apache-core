@@ -4,6 +4,18 @@ workflows:
   build:
     jobs:
       # Tag this build process in Docker Hub, Only apply to development, master, production branches
+      - build81:
+          filters:
+            branches:
+              only:
+                - main
+      # Tag this build process in Docker Hub, Only apply to development, master, production branches
+      - build81headless:
+          filters:
+            branches:
+              only:
+                - main
+      # Tag this build process in Docker Hub, Only apply to development, master, production branches
       - build80:
           filters:
             branches:
@@ -22,6 +34,58 @@ workflows:
               only:
                 - main
 jobs:
+  build81:
+    resource_class: small
+    docker:
+      - image: docker:20-git
+    environment:
+      # Define the Docker Hub Path to Push the Image
+      IMAGE_PATH: "nhalstead00/php-apache-core"
+      TAG_PREFIX: "8.1-"
+    steps:
+      - checkout
+      - setup_remote_docker:
+          docker_layer_caching: false
+          version: 20.10.6
+      - run:
+          name: Docker Version
+          command: docker -v
+      - run:
+          name: RUNC Version
+          command: runc -v
+      - run:
+          name: Install Bash
+          command: apk update && apk add bash
+      - run:
+          name: Push Docker Image to Docker Hub Registry
+          command: |
+            bash ~/project/.circleci/registry_push.sh 8.1/Dockerfile
+  build81headless:
+    resource_class: small
+    docker:
+      - image: docker:20-git
+    environment:
+      # Define the Docker Hub Path to Push the Image
+      IMAGE_PATH: "nhalstead00/php-apache-core"
+      TAG_PREFIX: "8.1-headless-"
+    steps:
+      - checkout
+      - setup_remote_docker:
+          docker_layer_caching: false
+          version: 20.10.6
+      - run:
+          name: Docker Version
+          command: docker -v
+      - run:
+          name: RUNC Version
+          command: runc -v
+      - run:
+          name: Install Bash
+          command: apk update && apk add bash
+      - run:
+          name: Push Docker Image to Docker Hub Registry
+          command: |
+            bash ~/project/.circleci/registry_push.sh 8.1/Dockerfile-headless
   build80:
     resource_class: small
     docker:
