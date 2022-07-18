@@ -37,6 +37,10 @@ COPY common/remoteip-env /usr/sbin
 COPY common/remoteip-clear /usr/sbin
 RUN chmod +x /usr/sbin/remoteip-*
 
+COPY common/opcache-preload /usr/sbin
+COPY common/opcache-status /usr/sbin
+RUN chmod +x /usr/sbin/opcache-*
+
 RUN sed -ri -e 's!AllowOverride None!AllowOverride All!g' /etc/apache2/apache2.conf
 RUN sed -ri -e 's!Listen 80!Listen 8181!g' /etc/apache2/ports.conf
 RUN sed -ri -e 's!VirtualHost \*:80!VirtualHost \*:8181!g' /etc/apache2/sites-enabled/000-default.conf
