@@ -3,6 +3,7 @@
     <deployment type="dockerfile">
       <settings>
         <option name="imageTag" value="test" />
+        <option name="attachToContainerNeeded" value="true" />
         <option name="containerName" value="php-apache-core-74-test" />
         <option name="envVars">
           <list>
