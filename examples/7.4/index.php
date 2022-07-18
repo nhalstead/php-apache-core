@@ -3,11 +3,11 @@
 $val = array(
 	"HTTP_X_FORWARDED_BY" => $_SERVER["HTTP_X_FORWARDED_BY"],
 	"REMOTE_ADDR" => $_SERVER["REMOTE_ADDR"],
-	"opcache.enable" => ini_get("opcache.enable"),
-	"opcache.validate_timestamps" => ini_get("opcache.validate_timestamps"),
-	"opcache.max_accelerated_files" => ini_get("opcache.max_accelerated_files"),
-	"opcache.memory_consumption" => ini_get("opcache.memory_consumption"),
-	"opcache.max_wasted_percentage" => ini_get("opcache.max_wasted_percentage"),
+	"opcache.enable" => ini_get("opcache.enable") === "1",
+	"opcache.validate_timestamps" => (int) ini_get("opcache.validate_timestamps"),
+	"opcache.max_accelerated_files" => (int) ini_get("opcache.max_accelerated_files"),
+	"opcache.memory_consumption" => (int) ini_get("opcache.memory_consumption"),
+	"opcache.max_wasted_percentage" => (int) ini_get("opcache.max_wasted_percentage"),
 );
 
 switch (strtolower($_GET["format"])) {
@@ -19,7 +19,7 @@ switch (strtolower($_GET["format"])) {
 	case "txt":
 		header("Content-Type: text/plain");
 		foreach ($val as $key => $value) {
-			echo "$key:$value" . PHP_EOL;
+			echo "$key: $value" . PHP_EOL;
 		}
 		exit();
 
