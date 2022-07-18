@@ -1,0 +1,24 @@
+#!/bin/bash
+
+#
+# This script will attempt to append to the opcache config
+#  a setting to enable opcache preloading.
+#
+# cat /usr/local/etc/php/conf.d/opcache.ini
+#
+
+OPCACHE_CONFIG_FILE="/usr/local/etc/php/conf.d/opcache.ini"
+
+if [ -f "$OPCACHE_CONFIG_FILE" ]; then
+
+    OPCACHE_PRECACHE_FILE="${1}"
+
+    # Ensure no other value is set.
+    sed -i -E '/^opcache\.preload=.*$/d' "$OPCACHE_CONFIG_FILE"
+
+    # Append "opcache.preload" to the file.
+    echo -e "opcache.preload=\"$OPCACHE_PRECACHE_FILE\"\n" >> "$OPCACHE_CONFIG_FILE"
+    echo "Configured Preload file."
+else
+    echo "Missing opcache Config: $OPCACHE_CONFIG_FILE"
+fi

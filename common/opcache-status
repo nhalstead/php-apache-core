@@ -1,0 +1,19 @@
+#!/usr/local/bin/php
+<?php
+    $status = opcache_get_status();
+
+	echo "Status: " . ($status ? "Enabled": "Disabled") . PHP_EOL;
+
+    if ($status !== false) {
+		echo "Used Memory: " . $status["memory_usage"]["used_memory"] . PHP_EOL;
+		echo "Free Memory: " . $status["memory_usage"]["free_memory"] . PHP_EOL;
+		echo "Wasted Memory: " . $status["memory_usage"]["wasted_memory"] . PHP_EOL;
+		echo PHP_EOL;
+		echo "Cached: " . $status["opcache_statistics"]["num_cached_keys"] . PHP_EOL;
+		echo "Cache Limit: " . $status["opcache_statistics"]["max_cached_keys"] . PHP_EOL;
+		echo PHP_EOL;
+		echo "Cache Misses: " . $status["opcache_statistics"]["misses"] . PHP_EOL;
+		echo "Cache Hits: " . $status["opcache_statistics"]["hits"] . PHP_EOL;
+	}
+
+?>
