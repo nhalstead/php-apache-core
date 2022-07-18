@@ -1,0 +1,22 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Run Example" type="docker-deploy" factoryName="dockerfile" server-name="Docker">
+    <deployment type="dockerfile">
+      <settings>
+        <option name="imageTag" value="test" />
+        <option name="containerName" value="php-apache-core-74-test" />
+        <option name="envVars">
+          <list>
+            <DockerEnvVarImpl>
+              <option name="name" value="APACHE_TRUSTED_PROXIES" />
+              <option name="value" value="172.17.0.1/24" />
+            </DockerEnvVarImpl>
+          </list>
+        </option>
+        <option name="commandLineOptions" value="--rm -p 8779:8181" />
+        <option name="showCommandPreview" value="true" />
+        <option name="sourceFilePath" value="examples/7.4/Dockerfile" />
+      </settings>
+    </deployment>
+    <method v="2" />
+  </configuration>
+</component>
