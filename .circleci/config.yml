@@ -52,7 +52,7 @@ jobs:
           command: docker -v
       - run:
           name: RUNC Version
-          command: runc -v
+          command: runc -v || true
       - run:
           name: Install Bash
           command: apk update && apk add bash
@@ -78,7 +78,7 @@ jobs:
           command: docker -v
       - run:
           name: RUNC Version
-          command: runc -v
+          command: runc -v || true
       - run:
           name: Install Bash
           command: apk update && apk add bash
@@ -104,7 +104,7 @@ jobs:
           command: docker -v
       - run:
           name: RUNC Version
-          command: runc -v
+          command: runc -v || true
       - run:
           name: Install Bash
           command: apk update && apk add bash
@@ -130,7 +130,7 @@ jobs:
           command: docker -v
       - run:
           name: RUNC Version
-          command: runc -v
+          command: runc -v || true
       - run:
           name: Install Bash
           command: apk update && apk add bash
@@ -156,7 +156,7 @@ jobs:
           command: docker -v
       - run:
           name: RUNC Version
-          command: runc -v
+          command: runc -v || true
       - run:
           name: Install Bash
           command: apk update && apk add bash
