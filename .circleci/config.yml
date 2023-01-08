@@ -5,30 +5,40 @@ workflows:
     jobs:
       # Tag this build process in Docker Hub, Only apply to development, master, production branches
       - build81:
+          context:
+            - "Docker Hub"
           filters:
             branches:
               only:
                 - main
       # Tag this build process in Docker Hub, Only apply to development, master, production branches
       - build81headless:
+          context:
+            - "Docker Hub"
           filters:
             branches:
               only:
                 - main
       # Tag this build process in Docker Hub, Only apply to development, master, production branches
       - build80:
+          context:
+            - "Docker Hub"
           filters:
             branches:
               only:
                 - main
       # Tag this build process in Docker Hub, Only apply to development, master, production branches
       - build80headless:
+          context:
+            - "Docker Hub"
           filters:
             branches:
               only:
                 - main
       # Tag this build process in Docker Hub, Only apply to development, master, production branches
       - build74:
+          context:
+            - "Docker Hub"
           filters:
             branches:
               only:
