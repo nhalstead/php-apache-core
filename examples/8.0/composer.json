@@ -1,0 +1,5 @@
+{
+  "require": {
+    "beganovich/snappdf": "^3.1"
+  }
+}
