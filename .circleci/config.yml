@@ -56,7 +56,6 @@ jobs:
       - checkout
       - setup_remote_docker:
           docker_layer_caching: false
-          version: 20.10.6
       - run:
           name: Docker Version
           command: docker -v
@@ -82,7 +81,6 @@ jobs:
       - checkout
       - setup_remote_docker:
           docker_layer_caching: false
-          version: 20.10.6
       - run:
           name: Docker Version
           command: docker -v
@@ -108,7 +106,6 @@ jobs:
       - checkout
       - setup_remote_docker:
           docker_layer_caching: false
-          version: 20.10.6
       - run:
           name: Docker Version
           command: docker -v
@@ -134,7 +131,6 @@ jobs:
       - checkout
       - setup_remote_docker:
           docker_layer_caching: false
-          version: 20.10.6
       - run:
           name: Docker Version
           command: docker -v
@@ -160,7 +156,6 @@ jobs:
       - checkout
       - setup_remote_docker:
           docker_layer_caching: false
-          version: 20.10.6
       - run:
           name: Docker Version
           command: docker -v
