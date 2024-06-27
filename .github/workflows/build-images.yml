@@ -45,6 +45,7 @@ jobs:
 
       - name: Build and push
         uses: docker/build-push-action@v5
+        if: matrix.php_version != '7.4' && matrix.variant != 'apache-chrome'
         with:
           context: .
           file: ./${{ matrix.php_version }}/${{ env.DOCKER_FILE }}
