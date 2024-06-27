@@ -49,7 +49,7 @@ jobs:
           context: .
           file: ./${{ matrix.php_version }}/${{ env.DOCKER_FILE }}
           tags:
-            ghcr.io/${{ github.repository }}:${{ env.DOCKER_TAG }}
+            ghcr.io/${{ github.repository }}:${{ env.DOCKER_TAG }},
             ghcr.io/${{ github.repository }}:${{ env.GITHUB_SHA_SHORT }}
           push: true
           cache-from: type=gha
