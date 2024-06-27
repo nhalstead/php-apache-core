@@ -1,0 +1,62 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php_version: ['8.3', '8.1', '8.0', '7.4']
+        variant: ['apache', 'apache-chrome']
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Login to Docker Registry
+        run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u ${{ secrets.DOCKERHUB_USER }} --password-stdin
+
+      - name: Login to GitHub Container Registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Set names
+        run: |
+          if [ "${{ matrix.variant }}" == "apache" ]; then
+            echo "DOCKER_TAG=${{ matrix.php_version }}" >> $GITHUB_ENV
+            echo "DOCKER_FILE=Dockerfile" >> $GITHUB_ENV
+          elif [ "${{ matrix.variant }}" == "apache-chrome" ]; then
+            echo "DOCKER_TAG=${{ matrix.php_version }}-headless" >> $GITHUB_ENV
+            echo "DOCKER_FILE=Dockerfile-headless" >> $GITHUB_ENV
+          else
+            echo "Invalid variant: ${{ matrix.variant }}"
+            exit 1
+          fi
+      - name: Github Short SHA
+        run: |
+          echo "GITHUB_SHA_SHORT=$(echo $GITHUB_SHA | cut -c 1-6)" >> $GITHUB_ENV
+
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./${{ matrix.php_version }}/${{ env.DOCKER_FILE }}
+          tags:
+            ghcr.io/${{ github.repository }}/php-apache-core:${{ env.DOCKER_TAG }}
+            ghcr.io/${{ github.repository }}/php-apache-core:${{ env.GITHUB_SHA_SHORT }}
+          push: true
+
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags:
+            ghcr.io/${{ github.repository }}:latest,
+            ghcr.io/${{ github.repository }}:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
