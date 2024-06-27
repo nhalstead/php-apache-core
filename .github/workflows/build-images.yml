@@ -26,6 +26,10 @@ jobs:
       - name: Login to GitHub Container Registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
+      - name: Github Short SHA
+        run: |
+          echo "GITHUB_SHA_SHORT=$(echo $GITHUB_SHA | cut -c 1-6)" >> $GITHUB_ENV
+
       - name: Set variables
         run: |
           if [ "${{ matrix.variant }}" == "apache" ]; then
@@ -39,13 +43,18 @@ jobs:
             exit 1
           fi
 
-      - name: Github Short SHA
+      - name: Check if file exists
+        id: check_file
         run: |
-          echo "GITHUB_SHA_SHORT=$(echo $GITHUB_SHA | cut -c 1-6)" >> $GITHUB_ENV
+          if [ -f "./${{ matrix.php_version }}/${{ env.DOCKER_FILE }}" ]; then
+            echo "file_exists=true" >> $GITHUB_ENV
+          else
+            echo "file_exists=false" >> $GITHUB_ENV
+          fi
 
       - name: Build and push
         uses: docker/build-push-action@v5
-        if: matrix.php_version != '7.4' && matrix.variant != 'apache-chrome'
+        if: env.file_exists == 'true'
         with:
           context: .
           file: ./${{ matrix.php_version }}/${{ env.DOCKER_FILE }}
