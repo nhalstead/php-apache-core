@@ -29,10 +29,10 @@ jobs:
       - name: Set variables
         run: |
           if [ "${{ matrix.variant }}" == "apache" ]; then
-            echo "DOCKER_TAG=${{ matrix.php_version }}" >> $GITHUB_ENV
+            echo "DOCKER_TAG=${{ matrix.php_version }}-latest" >> $GITHUB_ENV
             echo "DOCKER_FILE=Dockerfile" >> $GITHUB_ENV
           elif [ "${{ matrix.variant }}" == "apache-chrome" ]; then
-            echo "DOCKER_TAG=${{ matrix.php_version }}-headless" >> $GITHUB_ENV
+            echo "DOCKER_TAG=${{ matrix.php_version }}-latest-headless" >> $GITHUB_ENV
             echo "DOCKER_FILE=Dockerfile-headless" >> $GITHUB_ENV
           else
             echo "Invalid variant: ${{ matrix.variant }}"
