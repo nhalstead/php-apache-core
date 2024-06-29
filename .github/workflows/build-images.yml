@@ -3,6 +3,11 @@ name: Build Docker Images
 on:
   push:
     branches: [ main ]
+    paths-ignore:
+      - "README.md"
+      - "docker-compose.yml"
+      - "examples/**"
+      - ".run/**"
 
 permissions:
   contents: read
