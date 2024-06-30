@@ -55,7 +55,10 @@ jobs:
 
       - name: Login to Docker Registry
         # Only run this step if the secrets are set
-        if: "${{ secrets.DOCKER_HUB_USER }}" !== "" && "${{ secrets.DOCKER_HUB_TOKEN }}" !== ""
+        env:
+            DOCKER_HUB_USER: ${{ secrets.DOCKER_HUB_USER }}
+            DOCKER_HUB_TOKEN: ${{ secrets.DOCKER_HUB_TOKEN }}
+        if: env.DOCKER_HUB_USER != null && env.DOCKER_HUB_TOKEN != null
         run: echo "${{ secrets.DOCKER_HUB_TOKEN }}" | docker login -u ${{ secrets.DOCKER_HUB_USER }} --password-stdin
 
       - name: Login to GitHub Container Registry
