@@ -1,7 +1,13 @@
 <?php
 
+require_once __DIR__ . '/vendor/autoload.php';
+
+ini_set('display_startup_errors', 1);
+ini_set('display_errors', 1);
+error_reporting(-1);
+
 $val = array(
-	"HTTP_X_FORWARDED_BY" => $_SERVER["HTTP_X_FORWARDED_BY"],
+	"HTTP_X_FORWARDED_BY" => $_SERVER["HTTP_X_FORWARDED_BY"] ?? "",
 	"REMOTE_ADDR" => $_SERVER["REMOTE_ADDR"],
 	"opcache.enable" => ini_get("opcache.enable") === "1",
 	"opcache.validate_timestamps" => (int) ini_get("opcache.validate_timestamps"),
@@ -10,7 +16,9 @@ $val = array(
 	"opcache.max_wasted_percentage" => (int) ini_get("opcache.max_wasted_percentage"),
 );
 
-switch (strtolower($_GET["format"])) {
+$format = strtolower($_GET["format"] ?? null);
+
+switch ($format) {
 	case "json":
 		header("Content-Type: application/json");
 		echo json_encode($val);
@@ -24,10 +32,6 @@ switch (strtolower($_GET["format"])) {
 		exit();
 
 	case "pdf":
-		require_once __DIR__ . '/vendor/autoload.php';
-		$mpdf = new \Mpdf\Mpdf(['mode' => 'c']);
-		$mpdf->SetTitle("PHP Apache Config");
-		$mpdf->SetSubject("PHP Apache Core Docker Image Config");
 
 		$html = "<table>";
 		$html .= "<thead>";
@@ -39,10 +43,15 @@ switch (strtolower($_GET["format"])) {
 		}
 		$html .= "</tbody>";
 		$html .= "</table>";
-		$mpdf->WriteHTML($html);
-		$mpdf->Output();
 
-	case "html":
+        $output = (new \Beganovich\Snappdf\Snappdf())
+            ->setHtml($html)
+            ->generate();
+        header("Content-Type: application/pdf");
+        echo $output;
+        exit();
+
+    case "html":
 	default:
 		header("Content-Type: text/html");
 		echo "<table>";
@@ -57,5 +66,3 @@ switch (strtolower($_GET["format"])) {
 		echo "</table>";
 		exit();
 }
-
-?>
