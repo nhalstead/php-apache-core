@@ -13,6 +13,8 @@ on:
       - "examples/**"
       - ".run/**"
       - ".circleci/**"
+  schedule:
+    - cron: "0 16 * * MON,WED,FRI"
 
 concurrency:
   group: "${{ github.workflow }}-${{ github.ref }}"
