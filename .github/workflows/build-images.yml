@@ -78,6 +78,6 @@ jobs:
             ghcr.io/${{ github.repository }}:${{ env.DOCKER_TAG }},
             ghcr.io/${{ github.repository }}:${{ env.GITHUB_SHA_SHORT }}
           push: true
-#          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64,linux/arm64
           cache-from: type=gha
           cache-to: type=gha,mode=max
