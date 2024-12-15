@@ -4,7 +4,6 @@
       <settings>
         <option name="imageTag" value="nhalstead00/php-apache-core:7.4-latest" />
         <option name="attachToContainerNeeded" value="true" />
-        <option name="buildOnly" value="true" />
         <option name="containerName" value="php-apache-core-74-test" />
         <option name="contextFolderPath" value="." />
         <option name="envVars">

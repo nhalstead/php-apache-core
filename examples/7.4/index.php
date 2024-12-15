@@ -1,8 +1,8 @@
 <?php
 
 $val = array(
-	"HTTP_X_FORWARDED_BY" => $_SERVER["HTTP_X_FORWARDED_BY"],
-	"REMOTE_ADDR" => $_SERVER["REMOTE_ADDR"],
+	"HTTP_X_FORWARDED_BY" => @$_SERVER["HTTP_X_FORWARDED_BY"],
+	"REMOTE_ADDR" => @$_SERVER["REMOTE_ADDR"],
 	"opcache.enable" => ini_get("opcache.enable") === "1",
 	"opcache.validate_timestamps" => (int) ini_get("opcache.validate_timestamps"),
 	"opcache.max_accelerated_files" => (int) ini_get("opcache.max_accelerated_files"),
@@ -10,7 +10,37 @@ $val = array(
 	"opcache.max_wasted_percentage" => (int) ini_get("opcache.max_wasted_percentage"),
 );
 
-switch (strtolower($_GET["format"])) {
+$val["format_source"] = "query";
+$format = $_GET["format"] == null ? null : strtolower($_GET["format"]);
+
+if (! $format) {
+    $val["format_source"] = "header";
+    // Parse the Accept Header
+    $accept = $_SERVER["HTTP_ACCEPT"] ?? null;
+    if ($accept !== null) {
+        $accept = explode(",", $accept);
+        foreach ($accept as $a) {
+            $a = explode(";", $a);
+            $a = $a[0];
+            if ($a === "application/json") {
+                $format = "json";
+                break;
+            }
+            if ($a === "text/plain") {
+                $format = "txt";
+                break;
+            }
+            if ($a === "application/pdf") {
+                $format = "pdf";
+                break;
+            }
+        }
+    }
+}
+
+$val["format"] = $format;
+
+switch ($format) {
 	case "json":
 		header("Content-Type: application/json");
 		echo json_encode($val);

@@ -1,6 +1,6 @@
-FROM nhalstead00/php-apache-core:8.0-headless-latest as builder
+FROM ghcr.io/nhalstead/php-apache-core:8.3-headless AS builder
 
-ENV APACHE_DOCUMENT_ROOT /home/app
+ENV APACHE_DOCUMENT_ROOT=/home/app
 
 RUN mkdir -p /home/app
 WORKDIR /home/app

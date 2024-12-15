@@ -1,0 +1,5 @@
+{
+  "require": {
+    "beganovich/snappdf": "^v5.0.1"
+  }
+}

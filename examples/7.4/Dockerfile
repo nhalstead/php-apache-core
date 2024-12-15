@@ -1,6 +1,6 @@
-FROM nhalstead00/php-apache-core:7.4-latest
+FROM ghcr.io/nhalstead/php-apache-core:7.4
 
-ENV APACHE_DOCUMENT_ROOT /home/app
+ENV APACHE_DOCUMENT_ROOT=/home/app
 
 RUN mkdir -p /home/app
 WORKDIR /home/app

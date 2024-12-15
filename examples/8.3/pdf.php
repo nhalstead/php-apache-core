@@ -2,7 +2,7 @@
 
 
 $html = '
-<h1><a name="top"></a>mPDF</h1>
+<h1><a name="top"></a>snapPDF</h1>
 <h2>Basic HTML Example</h2>
 This file demonstrates most of the HTML elements.
 <h3>Heading 3</h3>
@@ -127,7 +127,12 @@ Level 3 subitem
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-$mpdf = new \Mpdf\Mpdf(['mode' => 'c']);
+use Beganovich\Snappdf\Snappdf;
 
-$mpdf->WriteHTML($html);
-$mpdf->Output();
+$snappdf = new Snappdf();
+$pdf = $snappdf
+    ->setHtml($html)
+    ->generate();
+
+header("Content-Type: application/pdf");
+echo $pdf;
