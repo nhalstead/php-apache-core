@@ -23,6 +23,7 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-24.04 # ubuntu-latest
+    timeout-minutes: 10
 
     strategy:
       matrix:
