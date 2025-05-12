@@ -33,7 +33,7 @@ This image is the PHP 7.4 (and 8.0, 8.1) packaged with the following changes:
 ## [Github Images](https://github.com/nhalstead/php-apache-core/pkgs/container/php-apache-core)
 
 > ghcr.io/nhalstead/php-apache-core
-> #### Automatically built every 2 days
+> #### Automatically built on Wednesday
 
 | PHP Version | Tag: Apache | Tag: Apache + Chrome |
 |:------------|:------------|:---------------------|
