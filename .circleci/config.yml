@@ -1,8 +1,34 @@
 version: 2.1
+
+triggers:
+  - schedule:
+      description: "Builds once a day during the work week (11AM EST)"
+      cron: "0 16 * * MON,WED,FRI"
+      filters:
+        branches:
+          only:
+            - main
+
 workflows:
   version: 2
   build:
     jobs:
+      # Tag this build process in Docker Hub, Only apply to development, master, production branches
+      - build84:
+          context:
+            - "Docker Hub"
+          filters:
+            branches:
+              only:
+                - main
+      # Tag this build process in Docker Hub, Only apply to development, master, production branches
+      - build84headless:
+          context:
+            - "Docker Hub"
+          filters:
+            branches:
+              only:
+                - main
       # Tag this build process in Docker Hub, Only apply to development, master, production branches
       - build83:
           context:
@@ -60,6 +86,58 @@ workflows:
               only:
                 - main
 jobs:
+
+  build84:
+    resource_class: small
+    docker:
+      - image: docker:20-git
+    environment:
+      # Define the Docker Hub Path to Push the Image
+      IMAGE_PATH: "nhalstead00/php-apache-core"
+      TAG_PREFIX: "8.4-"
+    steps:
+      - checkout
+      - setup_remote_docker:
+          docker_layer_caching: false
+      - run:
+          name: Docker Version
+          command: docker -v
+      - run:
+          name: RUNC Version
+          command: runc -v || true
+      - run:
+          name: Install Bash
+          command: apk update && apk add bash
+      - run:
+          name: Push Docker Image to Docker Hub Registry
+          command: |
+            bash ~/project/.circleci/registry_push.sh 8.4/Dockerfile
+  build84headless:
+    resource_class: small
+    docker:
+      - image: docker:20-git
+    environment:
+      # Define the Docker Hub Path to Push the Image
+      IMAGE_PATH: "nhalstead00/php-apache-core"
+      TAG_PREFIX: "8.4-headless-"
+    steps:
+      - checkout
+      - setup_remote_docker:
+          docker_layer_caching: false
+      - run:
+          name: Docker Version
+          command: docker -v
+      - run:
+          name: RUNC Version
+          command: runc -v || true
+      - run:
+          name: Install Bash
+          command: apk update && apk add bash
+      - run:
+          name: Push Docker Image to Docker Hub Registry
+          command: |
+            bash ~/project/.circleci/registry_push.sh 8.4/Dockerfile-headless
+
   build83:
     resource_class: small
     docker:
@@ -67,7 +145,7 @@ jobs:
     environment:
       # Define the Docker Hub Path to Push the Image
       IMAGE_PATH: "nhalstead00/php-apache-core"
-      TAG_PREFIX: "8.1-"
+      TAG_PREFIX: "8.3-"
     steps:
       - checkout
       - setup_remote_docker:
@@ -92,7 +170,7 @@ jobs:
     environment:
       # Define the Docker Hub Path to Push the Image
       IMAGE_PATH: "nhalstead00/php-apache-core"
-      TAG_PREFIX: "8.1-headless-"
+      TAG_PREFIX: "8.3-headless-"
     steps:
       - checkout
       - setup_remote_docker:
@@ -161,6 +239,7 @@ jobs:
           name: Push Docker Image to Docker Hub Registry
           command: |
             bash ~/project/.circleci/registry_push.sh 8.1/Dockerfile-headless
+
   build80:
     resource_class: small
     docker:
@@ -211,6 +290,7 @@ jobs:
           name: Push Docker Image to Docker Hub Registry
           command: |
             bash ~/project/.circleci/registry_push.sh 8.0/Dockerfile-headless
+
   build74:
     resource_class: small
     docker:
