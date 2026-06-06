@@ -1,0 +1,68 @@
+name: Build Docker Images
+
+permissions:
+  contents: read
+
+on:
+  workflow_dispatch: {}
+  pull_request:
+    types: [opened, synchronize]
+    paths-ignore:
+      - "README.md"
+      - "docker-compose.yml"
+      - "examples/**"
+      - ".run/**"
+      - ".circleci/**"
+
+concurrency:
+  group: "${{ github.workflow }}-${{ github.ref }}"
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04 # ubuntu-latest
+    timeout-minutes: 10
+
+    strategy:
+      matrix:
+        php_version: ['8.5', '8.4', '8.3', '8.1', '8.0']
+        variant: ['apache', 'apache-chrome']
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v6
+
+      - name: Github Short SHA
+        run: |
+          echo "GITHUB_SHA_SHORT=$(echo $GITHUB_SHA | cut -c 1-7)" >> $GITHUB_ENV
+
+      - name: Set variables
+        run: |
+          if [ "${{ matrix.variant }}" == "apache" ]; then
+            echo "DOCKER_TAG=pr_${{ github.event.number }}_${{ matrix.php_version }}" >> $GITHUB_ENV
+            echo "DOCKER_FILE=Dockerfile" >> $GITHUB_ENV
+          elif [ "${{ matrix.variant }}" == "apache-chrome" ]; then
+            echo "DOCKER_TAG=pr_${{ github.event.number }}_${{ matrix.php_version }}-headless" >> $GITHUB_ENV
+            echo "DOCKER_FILE=Dockerfile-headless" >> $GITHUB_ENV
+          else
+            echo "Invalid variant: ${{ matrix.variant }}"
+            exit 1
+          fi
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Build and push
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: ./aio/${{ env.DOCKER_FILE }}
+          tags:
+            ghcr.io/${{ github.repository }}:${{ env.DOCKER_TAG }},
+            ghcr.io/${{ github.repository }}:${{ env.GITHUB_SHA_SHORT }}
+          build-args: |
+            PHP_VERSION="${{ matrix.php_version }}"
+          push: false
+          platforms: linux/amd64,linux/arm64
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
