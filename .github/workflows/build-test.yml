@@ -61,7 +61,7 @@ jobs:
             ghcr.io/${{ github.repository }}:${{ env.DOCKER_TAG }},
             ghcr.io/${{ github.repository }}:${{ env.GITHUB_SHA_SHORT }}
           build-args: |
-            PHP_VERSION="${{ matrix.php_version }}"
+            PHP_VERSION=${{ matrix.php_version }}
           push: false
           platforms: linux/amd64,linux/arm64
           cache-from: type=gha
