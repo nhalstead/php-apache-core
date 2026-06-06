@@ -1,0 +1,12 @@
+#!/bin/bash
+
+URL="127.0.0.1:8282/server-status?auto"
+
+if command -v curl >/dev/null 2>&1; then
+    curl -fsS "$URL"
+elif command -v wget >/dev/null 2>&1; then
+    wget -q -O - "$URL"
+else
+    echo "Error: neither curl nor wget is installed" >&2
+    exit 1
+fi
