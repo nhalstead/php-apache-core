@@ -1,5 +1,5 @@
 # Normal Operations for setup of Apache and ENV Vars
-FROM --platform=linux/amd64 php:8.0-apache
+FROM php:8.0-apache AS base
 
 # Configure OPCache
 ENV PHP_OPCACHE_VALIDATE_TIMESTAMPS=0
@@ -19,6 +19,8 @@ RUN apt-get update -y; \
 	apt autoremove -y; \
 	curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer; \
 	rm -rf /var/lib/apt/lists/*;
+
+FROM base
 
 # Configure Apache
 #  - Enables Modrerite
