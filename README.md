@@ -2,20 +2,20 @@
 
 ## Why
 
-The images formed from this repo is to help minimize the extra steps needed to get up and running with a PHP Image with apache to serve traffic. All docker images are built in a CI pipeline and run every 2 days to ensure all dependencies are up-to-date with the source they are installed from.
+The images formed from this repo are to help minimize the extra steps needed to get up and running with a PHP Image with apache to serve traffic. All docker images are built in a CI pipeline and run every 2 days to ensure all dependencies are up to date with the source they are installed from.
 
-After using this docker image in other pipelines I was able to cut build times down by 4-5 minutes per build.
+After using this docker image in other pipelines, I was able to cut build times down by 4-5 minutes per build.
+
+_Images built also support ARM/ARM64 architectures_
 
 ## Changes
 
-This image is the PHP 7.4 (and 8.0, 8.1) packaged with the following changes:
-- PHP (version 7.4 or 8.0)
+This image is the PHP+Apache Image packaged with the following changes:
+- PHP (version 7.4 or 8.0–8.5)
 - Apache
-- OPCache (and configured)
+- OPCache (configured)
 - OpenSSL
 - ZIP (with libzip-dev and php extension)
-- git
-- iputils
 - Redis Extension
 - GD and imagick Extensions
 - PDO
@@ -25,15 +25,16 @@ This image is the PHP 7.4 (and 8.0, 8.1) packaged with the following changes:
 - Apache Signatures Off
 - Apache Allow htaccess overrides
 - Apache Logs Updated to include the remote ips
+- Apache Server Status (configured on :8282/healthz and :8282/server-status)
 
 ---
 
 # Images
 
-## [Github Images](https://github.com/nhalstead/php-apache-core/pkgs/container/php-apache-core)
+## [GitHub Images](https://github.com/nhalstead/php-apache-core/pkgs/container/php-apache-core)
 
 > ghcr.io/nhalstead/php-apache-core
-> #### Automatically built on Wednesday
+> #### Automatically built on Wednesday by GitHub Actions
 
 | PHP Version | Tag: Apache | Tag: Apache + Chrome |
 |:------------|:------------|:---------------------|
@@ -46,7 +47,7 @@ This image is the PHP 7.4 (and 8.0, 8.1) packaged with the following changes:
 ## [Docker Hub Images](https://hub.docker.com/r/nhalstead00/php-apache-core)
 
 > nhalstead00/php-apache-core
-> #### Automatically built every 2 days
+> #### Automatically built every 2 days by CircleCI (will be replaced with GitHub Actions in the future)
 
 | PHP Version | Tag: Apache | Tag: Apache + Chrome |
 |:------------|:------------|:---------------------|
@@ -54,5 +55,3 @@ This image is the PHP 7.4 (and 8.0, 8.1) packaged with the following changes:
 | 8.1         | 8.1-latest  | 8.1-headless-latest  |
 | 8.0         | 8.0-latest  | 8.0-headless-latest  |
 | 7.4         | 7.4-latest  |                      |
-
-

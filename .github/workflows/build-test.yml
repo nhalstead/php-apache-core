@@ -1,0 +1,78 @@
+name: Test Build Images on PR
+
+permissions:
+  contents: read
+
+on:
+  workflow_dispatch: {}
+  pull_request:
+    types: [opened, synchronize]
+    paths-ignore:
+      - "README.md"
+      - "docker-compose.yml"
+      - "examples/**"
+      - ".run/**"
+      - ".circleci/**"
+
+concurrency:
+  group: "${{ github.workflow }}-${{ github.ref }}"
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build ${{ matrix.target.platform }} ${{ matrix.variant }} ${{ matrix.php_version }}
+    runs-on: ${{ matrix.target.runner }}
+    timeout-minutes: 10
+
+    strategy:
+      fail-fast: false
+      matrix:
+        php_version: ['8.5' , '8.4', '8.3', '8.1', '8.0', '7.4']
+        variant: ['apache', 'apache-chrome']
+        target:
+          - platform: linux/amd64
+            runner: ubuntu-24.04 # ubuntu-latest
+            artifact_suffix: linux-amd64
+          - platform: linux/arm64
+            runner: ubuntu-24.04-arm # ubuntu-latest
+            artifact_suffix: linux-arm64
+        exclude:
+          - php_version: '7.4'
+            variant: 'apache-chrome'
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v6
+
+      - name: Set variables
+        run: |
+          if [ "${{ matrix.variant }}" == "apache" ]; then
+            echo "DOCKER_TAG=pr_${{ github.event.number }}_${{ matrix.php_version }}" >> $GITHUB_ENV
+            echo "DOCKER_FILE=Dockerfile" >> $GITHUB_ENV
+          elif [ "${{ matrix.variant }}" == "apache-chrome" ]; then
+            echo "DOCKER_TAG=pr_${{ github.event.number }}_${{ matrix.php_version }}-headless" >> $GITHUB_ENV
+            echo "DOCKER_FILE=Dockerfile-headless" >> $GITHUB_ENV
+          else
+            echo "Invalid variant: ${{ matrix.variant }}"
+            exit 1
+          fi
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Login to GitHub Container Registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+
+      - name: Build and push by digest
+        id: build
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: ./aio/${{ env.DOCKER_FILE }}
+          build-args: |
+            PHP_VERSION=${{ matrix.php_version }}
+          platforms: ${{ matrix.target.platform }}
+          push: false
+          provenance: mode=min
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
