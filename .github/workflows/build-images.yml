@@ -23,13 +23,22 @@ concurrency:
 
 jobs:
   build:
-    runs-on: ubuntu-24.04 # ubuntu-latest
+    name: Build ${{ matrix.target.platform }} ${{ matrix.variant }} ${{ matrix.php_version }}
+    runs-on: ${{ matrix.target.runner }}
     timeout-minutes: 10
 
     strategy:
+      fail-fast: false
       matrix:
-        php_version: ['8.4', '8.3', '8.1', '8.0', '7.4']
+        php_version: ['8.5' , '8.4', '8.3', '8.1', '8.0', '7.4']
         variant: ['apache', 'apache-chrome']
+        target:
+          - platform: linux/amd64
+            runner: ubuntu-24.04 # ubuntu-latest
+            artifact_suffix: linux-amd64
+          - platform: linux/arm64
+            runner: ubuntu-24.04-arm # ubuntu-latest
+            artifact_suffix: linux-arm64
         exclude:
           - php_version: '7.4'
             variant: 'apache-chrome'
@@ -38,17 +47,13 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v6
 
-      - name: Github Short SHA
-        run: |
-          echo "GITHUB_SHA_SHORT=$(echo $GITHUB_SHA | cut -c 1-7)" >> $GITHUB_ENV
-
       - name: Set variables
         run: |
           if [ "${{ matrix.variant }}" == "apache" ]; then
-            echo "DOCKER_TAG=${{ matrix.php_version }}" >> $GITHUB_ENV
+            echo "DOCKER_TAG=${{ github.event.number }}_${{ matrix.php_version }}" >> $GITHUB_ENV
             echo "DOCKER_FILE=Dockerfile" >> $GITHUB_ENV
           elif [ "${{ matrix.variant }}" == "apache-chrome" ]; then
-            echo "DOCKER_TAG=${{ matrix.php_version }}-headless" >> $GITHUB_ENV
+            echo "DOCKER_TAG=${{ github.event.number }}_${{ matrix.php_version }}-headless" >> $GITHUB_ENV
             echo "DOCKER_FILE=Dockerfile-headless" >> $GITHUB_ENV
           else
             echo "Invalid variant: ${{ matrix.variant }}"
@@ -58,21 +63,94 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
 
+      - name: Login to GitHub Container Registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+
+      - name: Build and push by digest
+        id: build
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: ./aio/${{ env.DOCKER_FILE }}
+          build-args: |
+            PHP_VERSION=${{ matrix.php_version }}
+          platforms: ${{ matrix.target.platform }}
+          outputs: type=image,name=ghcr.io/${{ github.repository }},push-by-digest=true,name-canonical=true,push=true
+          provenance: mode=min
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Export digest
+        run: |
+          mkdir -p "/tmp/digests/${{ env.DOCKER_TAG }}"
+          DIGEST="${{ steps.build.outputs.digest }}"
+          touch "/tmp/digests/${{ env.DOCKER_TAG }}/${DIGEST#sha256:}"
+
+      - name: Upload digest
+        uses: actions/upload-artifact@v7
+        with:
+          name: digests-${{ env.DOCKER_TAG }}-${{ matrix.target.artifact_suffix }}
+          path: /tmp/digests
+          if-no-files-found: error
+          retention-days: 1
+
+  manifest:
+    name: Create multi-arch manifests
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 10
+    needs: build
+
+    steps:
+      - name: Github Short SHA
+        run: |
+          echo "GITHUB_SHA_SHORT=$(echo "$GITHUB_SHA" | cut -c 1-7)" >> "$GITHUB_ENV"
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
       - name: Login to Docker Registry
         run: echo "${{ secrets.DOCKER_HUB_TOKEN }}" | docker login -u ${{ secrets.DOCKER_HUB_USER }} --password-stdin
 
       - name: Login to GitHub Container Registry
-        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
 
-      - name: Build and push
-        uses: docker/build-push-action@v7
+      - name: Download digests
+        uses: actions/download-artifact@v8
         with:
-          context: .
-          file: ./${{ matrix.php_version }}/${{ env.DOCKER_FILE }}
-          tags:
-            ghcr.io/${{ github.repository }}:${{ env.DOCKER_TAG }},
-            ghcr.io/${{ github.repository }}:${{ env.GITHUB_SHA_SHORT }}
-          push: true
-          platforms: linux/amd64,linux/arm64
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          pattern: digests-*
+          path: /tmp/digests
+          merge-multiple: true
+
+      - name: Create multi-arch manifests
+        run: |
+          set -euo pipefail
+          
+          for digest_dir in /tmp/digests/*; do
+            if [ ! -d "$digest_dir" ]; then
+              continue
+            fi
+          
+            docker_tag="$(basename "$digest_dir")"
+            digest_count="$(find "$digest_dir" -maxdepth 1 -type f | wc -l | tr -d ' ')"
+          
+            if [ "$digest_count" -lt 2 ]; then
+              echo "Expected at least 2 digests for ${docker_tag}, found ${digest_count}"
+              find "$digest_dir" -maxdepth 1 -type f -print
+              exit 1
+            fi
+          
+            refs=""
+            for digest_file in "$digest_dir"/*; do
+              digest="$(basename "$digest_file")"
+              refs="${refs} ghcr.io/${{ github.repository }}@sha256:${digest}"
+            done
+          
+            echo "Creating manifest for ghcr.io/${{ github.repository }}:${docker_tag}"
+          
+            docker buildx imagetools create \
+              -t "ghcr.io/${{ github.repository }}:${docker_tag}" \
+              -t "ghcr.io/${{ github.repository }}:${GITHUB_SHA_SHORT}-${docker_tag}" \
+              ${refs}
+          
+            docker buildx imagetools inspect "ghcr.io/${{ github.repository }}:${docker_tag}"
+          done
