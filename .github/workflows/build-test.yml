@@ -20,14 +20,20 @@ concurrency:
 
 jobs:
   build:
-    runs-on: ubuntu-24.04 # ubuntu-latest
+    name: Build ${{ matrix.platform }} ${{ matrix.variant }} ${{ matrix.php_version }}
+    runs-on: ${{ matrix.runner }}
     timeout-minutes: 10
 
     strategy:
+      fail-fast: false
       matrix:
         php_version: ['8.5'] # , '8.4', '8.3', '8.1', '8.0']
         variant: ['apache', 'apache-chrome']
-        platform: ['linux/amd64','linux/arm64']
+        include:
+          - platform: linux/amd64
+            runner: ubuntu-24.04 # ubuntu-latest
+          - platform: linux/arm64
+            runner: ubuntu-24.04-arm # ubuntu-latest
 
     steps:
       - name: Checkout Code
