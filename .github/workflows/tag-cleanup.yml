@@ -1,0 +1,25 @@
+name: Delete old container images
+
+permissions:
+  contents: read
+  packages: write
+
+on:
+  workflow_dispatch: {}
+  schedule:
+    - cron: "0 0 * * 1"  # Run every Monday at 00:00 UTC
+
+jobs:
+  delete-package-versions:
+    name: Delete package versions older than 6 months, but keep the latest 5 in case of rollbacks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: snok/container-retention-policy@v3.1.0
+        with:
+          account: "user"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          image-names: "php-apache-core"
+          tag-selection: both  # select both tagged and untagged package versions
+          keep-n-most-recent: 5  # keep up to `n` tagged package versions for each of the packages
+          cut-off: 26w
+          dry-run: true
