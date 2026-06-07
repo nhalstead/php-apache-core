@@ -27,7 +27,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php_version: ['8.5'] # , '8.4', '8.3', '8.1', '8.0']
+        php_version: ['8.5' , '8.4', '8.3', '8.1', '8.0']
         variant: ['apache', 'apache-chrome']
         target:
           - platform: linux/amd64
@@ -78,7 +78,7 @@ jobs:
           build-args: |
             PHP_VERSION=${{ matrix.php_version }}
           push: false
-          provenance: mode=max
+          provenance: mode=min
           platforms: ${{ matrix.target.platform }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
