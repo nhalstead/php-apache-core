@@ -20,7 +20,7 @@ concurrency:
 
 jobs:
   build:
-    name: Build ${{ matrix.platform }} ${{ matrix.variant }} ${{ matrix.php_version }}
+    name: Build ${{ matrix.target.platform }} ${{ matrix.variant }} ${{ matrix.php_version }}
     runs-on: ${{ matrix.target.runner }}
     timeout-minutes: 10
 
