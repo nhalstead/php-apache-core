@@ -25,7 +25,7 @@ jobs:
 
     strategy:
       matrix:
-        php_version: ['8.5', '8.4', '8.3', '8.1', '8.0']
+        php_version: ['8.5'] # , '8.4', '8.3', '8.1', '8.0']
         variant: ['apache', 'apache-chrome']
         platform: ['linux/amd64','linux/arm64']
 
