@@ -30,7 +30,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php_version: ['8.5' , '8.4', '8.3', '8.1', '8.0', '7.4']
+        php_version: ['8.5', '8.4', '8.3', '8.1', '8.0', '7.4']
         variant: ['apache', 'apache-chrome']
         target:
           - platform: linux/amd64
@@ -50,10 +50,10 @@ jobs:
       - name: Set variables
         run: |
           if [ "${{ matrix.variant }}" == "apache" ]; then
-            echo "DOCKER_TAG=${{ github.event.number }}_${{ matrix.php_version }}" >> $GITHUB_ENV
+            echo "DOCKER_TAG=${{ matrix.php_version }}" >> $GITHUB_ENV
             echo "DOCKER_FILE=Dockerfile" >> $GITHUB_ENV
           elif [ "${{ matrix.variant }}" == "apache-chrome" ]; then
-            echo "DOCKER_TAG=${{ github.event.number }}_${{ matrix.php_version }}-headless" >> $GITHUB_ENV
+            echo "DOCKER_TAG=${{ matrix.php_version }}-headless" >> $GITHUB_ENV
             echo "DOCKER_FILE=Dockerfile-headless" >> $GITHUB_ENV
           else
             echo "Invalid variant: ${{ matrix.variant }}"
