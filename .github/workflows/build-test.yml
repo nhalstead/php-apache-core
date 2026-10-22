@@ -4,7 +4,12 @@ permissions:
   contents: read
 
 on:
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      no_cache:
+        description: "Disable Docker build cache (full rebuild)"
+        type: boolean
+        default: false
   pull_request:
     types: [opened, synchronize]
     paths-ignore:
@@ -28,7 +33,7 @@ jobs:
       fail-fast: false
       matrix:
         php_version: ['8.5', '8.4', '8.3', '8.1', '8.0', '7.4']
-        variant: ['apache', 'apache-chrome']
+        variant: ['apache', 'apache-headless']
         target:
           - platform: linux/amd64
             runner: ubuntu-24.04 # ubuntu-latest
@@ -38,7 +43,7 @@ jobs:
             artifact_suffix: linux-arm64
         exclude:
           - php_version: '7.4'
-            variant: 'apache-chrome'
+            variant: 'apache-headless'
 
     steps:
       - name: Checkout Code
@@ -48,7 +53,7 @@ jobs:
         run: |
           if [ "${{ matrix.variant }}" == "apache" ]; then
             echo "DOCKER_FILE=Dockerfile" >> $GITHUB_ENV
-          elif [ "${{ matrix.variant }}" == "apache-chrome" ]; then
+          elif [ "${{ matrix.variant }}" == "apache-headless" ]; then
             echo "DOCKER_FILE=Dockerfile-headless" >> $GITHUB_ENV
           else
             echo "Invalid variant: ${{ matrix.variant }}"
@@ -72,5 +77,6 @@ jobs:
           platforms: ${{ matrix.target.platform }}
           push: false
           provenance: mode=min
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          no-cache: ${{ inputs.no_cache || false }}
+          cache-from: ${{ inputs.no_cache && '' || 'type=gha' }}
+          cache-to: ${{ inputs.no_cache && '' || 'type=gha,mode=max' }}

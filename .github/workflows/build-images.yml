@@ -5,7 +5,12 @@ permissions:
   packages: write
 
 on:
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      no_cache:
+        description: "Disable Docker build cache (full rebuild)"
+        type: boolean
+        default: false
   push:
     branches: [ main ]
     paths-ignore:
@@ -31,7 +36,7 @@ jobs:
       fail-fast: false
       matrix:
         php_version: ['8.5', '8.4', '8.3', '8.1', '8.0', '7.4']
-        variant: ['apache', 'apache-chrome']
+        variant: ['apache', 'apache-headless']
         target:
           - platform: linux/amd64
             runner: ubuntu-24.04 # ubuntu-latest
@@ -41,7 +46,7 @@ jobs:
             artifact_suffix: linux-arm64
         exclude:
           - php_version: '7.4'
-            variant: 'apache-chrome'
+            variant: 'apache-headless'
 
     steps:
       - name: Checkout Code
@@ -52,7 +57,7 @@ jobs:
           if [ "${{ matrix.variant }}" == "apache" ]; then
             echo "DOCKER_TAG=${{ matrix.php_version }}" >> $GITHUB_ENV
             echo "DOCKER_FILE=Dockerfile" >> $GITHUB_ENV
-          elif [ "${{ matrix.variant }}" == "apache-chrome" ]; then
+          elif [ "${{ matrix.variant }}" == "apache-headless" ]; then
             echo "DOCKER_TAG=${{ matrix.php_version }}-headless" >> $GITHUB_ENV
             echo "DOCKER_FILE=Dockerfile-headless" >> $GITHUB_ENV
           else
@@ -77,8 +82,9 @@ jobs:
           platforms: ${{ matrix.target.platform }}
           outputs: type=image,name=ghcr.io/${{ github.repository }},push-by-digest=true,name-canonical=true,push=true
           provenance: mode=min
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          no-cache: ${{ inputs.no_cache || false }}
+          cache-from: ${{ inputs.no_cache && '' || 'type=gha' }}
+          cache-to: ${{ inputs.no_cache && '' || 'type=gha,mode=max' }}
 
       - name: Export digest
         run: |
@@ -86,6 +92,7 @@ jobs:
           DIGEST="${{ steps.build.outputs.digest }}"
           touch "/tmp/digests/${{ env.DOCKER_TAG }}/${DIGEST#sha256:}"
 
+      # Publish the digest signature for use later
       - name: Upload digest
         uses: actions/upload-artifact@v7
         with:
@@ -98,6 +105,8 @@ jobs:
     name: Create multi-arch manifests
     runs-on: ubuntu-24.04-arm
     timeout-minutes: 10
+
+    # Wait for all the builds to finish
     needs: build
 
     steps:
@@ -121,6 +130,7 @@ jobs:
           path: /tmp/digests
           merge-multiple: true
 
+      # Read in the digest signatures and push them as a tag as a dual-arch image.
       - name: Create multi-arch manifests
         run: |
           set -euo pipefail
